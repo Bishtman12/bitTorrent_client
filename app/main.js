@@ -5,8 +5,9 @@ import crypto from 'crypto'
 
 function parser(fileName) {
     const fileString = fs.readFileSync(fileName)
-    const decodedValue = bencodeJS.decode(fileString,'utf8');
-    console.log("Tracker URL:", decodedValue?.announce)
+    const decodedValue = bencodeJS.decode(fileString);
+    const announce = Buffer.from(decodedValue.announce).toString();
+    console.log("Tracker URL:", announce)
     console.log("Length:", decodedValue?.info?.length)
     console.log("Info Hash:", getInfoHash(decodedValue?.info))
     return true
