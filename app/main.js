@@ -4,7 +4,7 @@ import fs from 'fs'
 import crypto from 'crypto'
 
 function parser(fileName) {
-    const fileString = fs.readFileSync(fileName, { encoding: "binary" })
+    const fileString = fs.readFileSync(fileName)
     const decodedValue = bencodeJS.decode(fileString,'utf8');
     console.log("Tracker URL:", decodedValue?.announce)
     console.log("Length:", decodedValue?.info?.length)
@@ -15,17 +15,6 @@ function parser(fileName) {
 
 function getInfoHash(data) {
     const encodedValue = bencodeJS.encode(data);
-
-    // if(data != (bencodeJS.decode(encodedValue , 'ascii'))) {
-    //     console.log(JSON.stringify(data) == JSON.stringify(bencodeJS.decode(encodedValue)));
-    //     // console.log("HASH ARE EQUAL")
-    // }
-
-
-    // console.log("ORIGINAL DATA --> ",JSON.stringify(data));
-
-    // console.log("ENCODED DATA --> " , JSON.stringify(bencodeJS.decode(encodedValue)));
-
     const infoHash = encryptSha1(encodedValue);
     return infoHash
 }
@@ -34,20 +23,18 @@ function encryptSha1(value) {
     return crypto.createHash('sha1').update(value).digest('hex');
 }
 
-
 function main() {
-
   const command = process.argv[2] ?? "decode"
+
   if (command === "decode") {
     const bencodedValue = process.argv[3];
-    const finalResult = bencodeJS.decode(bencodedValue,'utf8')
+    const finalResult = bencodeJS.decode(bencodedValue, 'utf8')
     console.log(JSON.stringify(finalResult));
   }
 
   else if (command === "info") {
     const fileName = process.argv[3];
     parser(fileName)
-    return true
   }
   else {
     throw new Error(`Unknown command ${command}`);
