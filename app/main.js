@@ -1,22 +1,26 @@
 const process = require("process");
-const util = require("util");
 const bencodeJS = require("bencode-js");
+const parser = require("./parser");
 
-function decodeBencode(bencodedValue) {
-
-  const value = bencodeJS.decode(bencodedValue)
-  return value
-
-}
 
 function main() {
-  const command = process.argv[2];
+
+  const command = process.argv[2] ?? "decode"
   if (command === "decode") {
     const bencodedValue = process.argv[3];
-    console.log(JSON.stringify(decodeBencode(bencodedValue)));
-  } else {
+    const finalResult = bencodeJS.decode(bencodedValue)
+    console.log(JSON.stringify(finalResult[0]));
+  }
+
+  else if (command === "info") {
+    const fileName = process.argv[3];
+    parser(fileName)
+    return true
+  }
+  else {
     throw new Error(`Unknown command ${command}`);
   }
 }
 
 main();
+
