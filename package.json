@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bencode-js": "^0.0.8"
+    "bencode-js": "^0.0.8",
+    "bencodejs": "^1.0.0"
   }
 }

@@ -1,5 +1,5 @@
 const fs = require("fs");
-const bencodeJS = require("bencode-js");
+const bencodeJS = require("bencodejs");
 const crypto = require("crypto");
 
 function parser(fileName) {

@@ -1,5 +1,5 @@
 const process = require("process");
-const bencodeJS = require("bencode-js");
+const bencodeJS = require("bencodejs");
 const parser = require("./parser");
 
 
