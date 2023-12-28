@@ -10,9 +10,11 @@
     "type": "git",
     "url": "https://git.codecrafters.io/cc360ec25d58346a"
   },
+  "type": "module",
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bencode": "^4.0.0",
     "bencode-js": "^0.0.8",
     "bencodejs": "^1.0.0"
   }
