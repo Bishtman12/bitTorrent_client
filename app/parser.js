@@ -14,8 +14,17 @@ function parser(fileName) {
 
 function getInfoHash(data) {
     const encodedValue = bencodeJS.encode(data);
-    console.log(data);
-    console.log(bencodeJS.decode(encodedValue));
+
+    if(data != (bencodeJS.decode(encodedValue))) {
+        console.log(JSON.stringify(data) == JSON.stringify(bencodeJS.decode(encodedValue)));
+        // console.log("HASH ARE EQUAL")
+    }
+
+
+    // console.log("ORIGINAL DATA --> ",JSON.stringify(data));
+
+    // console.log("ENCODED DATA --> " , JSON.stringify(bencodeJS.decode(encodedValue)));
+
     const infoHash = encryptSha1(encodedValue);
     return infoHash
 }
