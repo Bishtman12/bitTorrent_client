@@ -14,14 +14,11 @@ function parser(fileName) {
 
 
 function getInfoHash(data) {
-    const encodedValue = bencodeJS.encode(data);
-    const infoHash = encryptSha1(encodedValue);
-    return infoHash
+  const encodedValue = bencodeJS.encode(data);
+  const infoHash = crypto.createHash("sha1").update(encodedValue).digest('hex')
+  return infoHash
 }
 
-function encryptSha1(value) {
-    return crypto.createHash('sha1').update(value).digest('hex');
-}
 
 function main() {
   const command = process.argv[2] ?? "decode"
