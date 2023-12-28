@@ -14,8 +14,8 @@ function parser(fileName) {
 
 function getInfoHash(data) {
     const encodedValue = bencodeJS.encode(data);
-    // console.log(data);
-    // console.log(bencodeJS.decode(encodedValue));
+    console.log(data);
+    console.log(bencodeJS.decode(encodedValue));
     const infoHash = encryptSha1(encodedValue);
     return infoHash
 }
