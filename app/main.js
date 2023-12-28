@@ -2,9 +2,6 @@ const process = require("process");
 const util = require("util");
 const bencodeJS = require("bencode-js");
 
-// Examples:
-// - decodeBencode("5:hello") -> "hello"
-// - decodeBencode("10:hello12345") -> "hello12345"
 function decodeBencode(bencodedValue) {
 
   const value = bencodeJS.decode(bencodedValue)
