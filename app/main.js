@@ -5,7 +5,7 @@ import crypto from 'crypto'
 
 function parser(fileName) {
     const fileString = fs.readFileSync(fileName, { encoding: "binary" })
-    const decodedValue = bencodeJS.decode(fileString,'ascii');
+    const decodedValue = bencodeJS.decode(fileString,'utf8');
     console.log("Tracker URL:", decodedValue?.announce)
     console.log("Length:", decodedValue?.info?.length)
     console.log("Info Hash:", getInfoHash(decodedValue?.info))
@@ -40,7 +40,7 @@ function main() {
   const command = process.argv[2] ?? "decode"
   if (command === "decode") {
     const bencodedValue = process.argv[3];
-    const finalResult = bencodeJS.decode(bencodedValue)
+    const finalResult = bencodeJS.decode(bencodedValue,'utf8')
     console.log(JSON.stringify(finalResult));
   }
 
