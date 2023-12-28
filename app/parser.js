@@ -1,6 +1,6 @@
 const fs = require("fs");
 const bencodeJS = require("bencode-js");
-
+const crypto = require("crypto");
 
 function parser(fileName) {
     const fileString = fs.readFileSync(fileName, { encoding: "binary" })
