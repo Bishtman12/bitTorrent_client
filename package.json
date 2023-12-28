@@ -1,0 +1,18 @@
+{
+  "name": "codecrafters-bittorrent-javascript",
+  "version": "1.0.0",
+  "description": "[![progress-banner](https://backend.codecrafters.io/progress/bittorrent/28ea1594-cd96-4166-bdd1-5295d06e8c92)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.codecrafters.io/cc360ec25d58346a"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bencode-js": "^0.0.8"
+  }
+}
