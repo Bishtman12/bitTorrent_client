@@ -8,7 +8,7 @@ function main() {
   const command = process.argv[2] ?? "decode"
   if (command === "decode") {
     const bencodedValue = process.argv[3];
-    const finalResult = bencodeJS.decode(bencodedValue)
+    const finalResult = bencodeJS.decode(bencodedValue , 'ascii')
     console.log(JSON.stringify(finalResult));
   }
 
