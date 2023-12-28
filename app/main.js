@@ -9,7 +9,7 @@ function main() {
   if (command === "decode") {
     const bencodedValue = process.argv[3];
     const finalResult = bencodeJS.decode(bencodedValue)
-    console.log(JSON.stringify(finalResult[0]));
+    console.log(JSON.stringify(finalResult));
   }
 
   else if (command === "info") {
