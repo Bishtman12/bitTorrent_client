@@ -10,7 +10,7 @@ function parser(fileName) {
   console.log("Tracker URL:", announce)
   console.log("Length:", decodedValue?.info?.length)
   console.log("Info Hash:", getInfoHash(decodedValue?.info))
-  console.log("Piece Length: ", decodedValue?.info?.['piece length'])
+  console.log("Piece Length:", decodedValue?.info?.['piece length'])
   console.log("Piece Hashes: ")
   printPieceHashes(decodedValue?.info?.pieces)
   return true
