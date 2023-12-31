@@ -4,15 +4,38 @@ import fs from 'fs'
 import crypto from 'crypto'
 
 function parser(fileName) {
-    const fileString = fs.readFileSync(fileName)
-    const decodedValue = bencodeJS.decode(fileString);
-    const announce = Buffer.from(decodedValue.announce).toString();
-    console.log("Tracker URL:", announce)
-    console.log("Length:", decodedValue?.info?.length)
-    console.log("Info Hash:", getInfoHash(decodedValue?.info))
-    return true
+  const fileString = fs.readFileSync(fileName)
+  const decodedValue = bencodeJS.decode(fileString);
+  const announce = Buffer.from(decodedValue.announce).toString();
+  console.log("Tracker URL:", announce)
+  console.log("Length:", decodedValue?.info?.length)
+  console.log("Info Hash:", getInfoHash(decodedValue?.info))
+  console.log("Piece Length: ", decodedValue?.info?.['piece length'])
+  console.log("Piece Hashes: ")
+  printPieceHashes(decodedValue?.info?.pieces)
+  return true
 }
 
+function printPieceHashes(info) {
+  let i = 0;
+  let dummyArray = [];
+  while (i < info.length) {
+    //piece hash
+    if (dummyArray.length == 20) {
+      console.log(`${getPieceHash(dummyArray,'hex')}`)
+      dummyArray = []
+    }
+    dummyArray.push(info[i])
+    i += 1
+  }
+  console.log(`${getPieceHash(dummyArray,'hex')}`)
+  return true
+}
+
+
+function getPieceHash(data, encoding) {
+  return Buffer.from(data).toString(encoding);
+}
 
 function getInfoHash(data) {
   const encodedValue = bencodeJS.encode(data);
