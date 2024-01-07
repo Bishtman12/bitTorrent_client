@@ -1,6 +1,7 @@
 import process from 'process';
 import { parser } from './parser.js';
 import { getAllPeers } from './peers.js';
+import bencodeJS from 'bencode';
 
 function main() {
 
