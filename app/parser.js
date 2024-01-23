@@ -2,27 +2,27 @@ import fs from 'fs'
 import crypto from 'crypto';
 import bencodeJS from 'bencode';
 
-
-function parser(fileName) {
-
-    const fileString = fs.readFileSync(fileName)
-    const decodedValue = bencodeJS.decode(fileString);
+function parser(fileName, need_info) {
+    const decodedValue = decodeFile(fileName);
     const announce = Buffer.from(decodedValue.announce).toString();
+    if (need_info == "need") {
+        const infoHash = getInfoHash(decodedValue?.info)
+        return infoHash
+    }
+    console.log(decodedValue)
     console.log("Tracker URL:", announce)
     console.log("Length:", decodedValue?.info?.length)
-    console.log("Info Hash:", getInfoHash(decodedValue?.info))
+    console.log("Info Hash:", getInfoHash(decodedValue?.info, 'hex'))
     console.log("Piece Length:", decodedValue?.info?.['piece length'])
     console.log("Piece Hashes: ")
     printPieceHashesinHex(decodedValue?.info?.pieces)
     return true
 }
 
-
 function returnParsedDataToPeer(fileName) {
-    const fileString = fs.readFileSync(fileName)
-    const decodedValue = bencodeJS.decode(fileString);
+    const decodedValue = decodeFile(fileName);
     const announce = Buffer.from(decodedValue.announce).toString();
-    const piecesHashedArray = printPieceHashesinUrlEncoded(decodedValue?.info)
+    const piecesHashedArray = getWholePieceHash(decodedValue?.info)
     const finalObject = {
         tracker_url: announce,
         pieces: piecesHashedArray,
@@ -31,35 +31,37 @@ function returnParsedDataToPeer(fileName) {
     return finalObject
 }
 
-function printPieceHashesinUrlEncoded(info) {
+function decodeFile(fileName) {
+    const fileString = fs.readFileSync(fileName)
+    return bencodeJS.decode(fileString);
+}
+
+function getWholePieceHash(info) {
     const encodedForm = bencodeJS.encode(info);
     const sha_hashed = crypto.createHash("sha1").update(encodedForm).digest();
-    const infoHashUrlEncoded = urlEncodeBytes(sha_hashed)
-    return infoHashUrlEncoded
+    return urlEncodeBytes(sha_hashed)
 }
 
 function printPieceHashesinHex(info) {
     let stack = [];
     for (const element of info) {
-        //piece hash
         if (stack.length == 20) {
-            console.log(`${getPieceHash(stack, 'hex')}`)
+            console.log(`${encodeBuffer(stack, 'hex')}`)
             stack = []
         }
         stack.push(element)
     }
-    console.log(`${getPieceHash(stack, 'hex')}`)
+    console.log(`${encodeBuffer(stack, 'hex')}`)
     return true
 }
 
-
-function getPieceHash(data, encoding) {
+function encodeBuffer(data, encoding) {
     return Buffer.from(data).toString(encoding);
 }
 
-function getInfoHash(data) {
+function getInfoHash(data, encoding) {
     const encodedValue = bencodeJS.encode(data);
-    const infoHash = crypto.createHash("sha1").update(encodedValue).digest('hex')
+    const infoHash = crypto.createHash("sha1").update(encodedValue).digest(encoding)
     return infoHash
 }
 
@@ -68,15 +70,18 @@ function isUrlSafe(char) {
 }
 
 function urlEncodeBytes(buf) {
-    let encoded = ''
-    for (let i = 0; i < buf.length; i++) {
-        const charBuf = Buffer.from('00', 'hex')
-        charBuf.writeUInt8(buf[i])
-        const char = charBuf.toString()
+    let encoded = '';
+    for (const element of buf) {
+        const charBuf = Buffer.from('00', 'hex');
+
+        // this converts the byte into character
+        charBuf.writeUInt8(element);
+        const char = charBuf.toString();
+
         if (isUrlSafe(char)) {
             encoded += char
         } else {
-            encoded += `%${charBuf.toString('hex').toUpperCase()}`
+            encoded += `%${charBuf.toString('hex').toUpperCase()}`;
         }
     }
     return encoded
