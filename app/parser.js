@@ -9,14 +9,9 @@ function parser(fileName, need_info) {
         const infoHash = getInfoHash(decodedValue?.info)
         return infoHash
     }
-    console.log(decodedValue)
-    console.log("Tracker URL:", announce)
-    console.log("Length:", decodedValue?.info?.length)
-    console.log("Info Hash:", getInfoHash(decodedValue?.info, 'hex'))
-    console.log("Piece Length:", decodedValue?.info?.['piece length'])
-    console.log("Piece Hashes: ")
-    printPieceHashesinHex(decodedValue?.info?.pieces)
-    return true
+    const piece_hashes = printPieceHashesinHex(decodedValue?.info?.pieces)
+
+    return { piece_hashes, announce, length: decodedValue?.info?.length, info_hash: getInfoHash(decodedValue?.info, 'hex'), piece_length: decodedValue?.info?.['piece length'] }
 }
 
 function returnParsedDataToPeer(fileName) {
@@ -44,15 +39,16 @@ function getWholePieceHash(info) {
 
 function printPieceHashesinHex(info) {
     let stack = [];
+    const result = []
     for (const element of info) {
         if (stack.length == 20) {
-            console.log(`${encodeBuffer(stack, 'hex')}`)
+            result.push(encodeBuffer(stack, 'hex'))
             stack = []
         }
         stack.push(element)
     }
-    console.log(`${encodeBuffer(stack, 'hex')}`)
-    return true
+    result.push(encodeBuffer(stack, 'hex'))
+    return result
 }
 
 function encodeBuffer(data, encoding) {

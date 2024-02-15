@@ -30,8 +30,7 @@ async function makeGetRequest(data) {
             method: 'get',
             maxBodyLength: Infinity,
             url,
-            responseType: "arraybuffer",
-            headers: {}
+            responseType: "arraybuffer"
         };
         const resultBuffer = (await axios.request(config))?.data
 
@@ -53,9 +52,8 @@ async function makeGetRequest(data) {
                     const byteArray = Buffer.from(previous_hex); // Example byte array
                     const byteOrder = 'BE'; // 'BE' for big-endian, 'LE' for little-endian
                     const port = byteArray.readUIntBE(0, byteArray.length, byteOrder);
-                    all_ips.push({ip : ip.slice(0,ip.length-1),port})
+                    all_ips.push({ ip: ip.slice(0, ip.length - 1), port })
                     ip += port
-                    console.log(ip);
                     ip = "";
                     previous_hex = [];
                     count = 0
