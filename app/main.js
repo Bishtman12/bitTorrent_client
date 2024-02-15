@@ -43,11 +43,11 @@ async function main() {
             const address = process.argv[4];
 
             // from the command line
-            // const [ip, port] = address.split(":");
+            const [static_ip, static_port] = address.split(":");
             const peer_id = "00112233445566778899";
-            const peer_list = await getAllPeers(torrent_file_name);
+            // const peer_list = await getAllPeers(torrent_file_name);
 
-            const { static_ip, static_port } = peer_list[2];
+            // const { static_ip, static_port } = peer_list[2];
             // await handshake(torrent_file_name,ip,port)
             const info_hash = parser(torrent_file_name, "need");
             const peer_options = {
