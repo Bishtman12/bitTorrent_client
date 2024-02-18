@@ -5,7 +5,6 @@ import bencodeJS from 'bencode';
 import { Peer } from './connect-peer.js';
 const DOWNLOAD_PATH = "temp/";
 import fs from "fs";
-import path from 'path';
 
 async function main() {
     let torrent_file_name;
@@ -35,7 +34,6 @@ async function main() {
                 console.log(str)
             }
             break
-
         case "handshake":
             /*
             telnet 178.62.82.89 51470
@@ -99,11 +97,13 @@ async function main() {
 
             console.log("DOWNLOADED PIECES SUCCESSFULLY");
 
-            const tempFolderPath = './temp/';
             const outputFile = downloaded_file_path;
             console.log(finalBuffer);
+
             fs.writeFileSync(outputFile, finalBuffer);
-            console.log("FILE WRITE SUCCESS")
+
+            console.log("FILE WRITE SUCCESS");
+
             break;
         default:
             throw new Error(`Unknown command ${command}`);

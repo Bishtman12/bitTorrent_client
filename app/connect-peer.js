@@ -144,6 +144,7 @@ class Peer {
         message.writeUInt32BE(blockSize, 13); // block length
         return message;
     }
+    
     handlePiece() {
         const incoming_piece_index = this.buffer.readUInt32BE(5);
         const incoming_block_offset = this.buffer.readUInt32BE(9);
