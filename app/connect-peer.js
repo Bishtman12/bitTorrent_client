@@ -8,7 +8,7 @@ const DEFAULT_BLOCK_SIZE = 2 ** 14;
 const STORAGE_PATH = "storage/";
 
 class Peer {
-    constructor({ ip, port, piece_length, piece_index, piece_hashes, info_hash, peer_id, output_path = "" }) {
+    constructor({ ip, port, piece_length, piece_index, piece_hashes, info_hash, peer_id, output_path = STORAGE_PATH }) {
         this.ip = ip;
         this.port = port;
         this.info_hash = info_hash;
@@ -19,14 +19,38 @@ class Peer {
         this.output_path = output_path;
         this.socket = null;
         this.buffer = Buffer.alloc(0);
+        this.downloaded = 0;
     }
 
+    async isConnected() {
+        return (this.socket && !this.socket.closed)
+    }
+
+    // when the handshake is done this function is returned.
     async connect() {
-        this.socket = net.connect(this.port, this.ip);
-        this.socket.on("data", this.handleData.bind(this));
-        this.socket.on("error", this.handleError.bind(this));
-        this.socket.on("close", () => console.log("Connection Closed..."));
-        await this.doHandshake();
+        return new Promise(async (resolve) => {
+
+            console.log(JSON.stringify(this))
+
+            this.socket = net.connect(this.port, this.ip, () => {
+                console.log(`${this.ip}:${this.port} is connected`)
+            });
+
+            this.socket.on("data", this.handleData.bind(this));
+
+            this.socket.on("error", this.handleError.bind(this));
+
+            this.socket.on("close", () => console.log("Connection Closed..."));
+
+            await this.doHandshake();
+
+            this.socket.on("downloaded", () => {
+                this.socket.end()
+                resolve(this.downloaded)
+            })
+            console.log("CONNECT OVER.")
+
+        })
     }
 
     async doHandshake() {
@@ -39,11 +63,15 @@ class Peer {
         this.socket.write(handshake);
 
         const response = await this.waitForData();
+
         this.validateHandshake(response);
+
         this.buffer = Buffer.alloc(0);
+
         if (response.length > 68) {
             this.socket.emit("data", response.slice(68));
         }
+
     }
 
     validateHandshake(response) {
@@ -60,7 +88,7 @@ class Peer {
     async waitForData() {
         return new Promise((resolve) => {
             const onData = (data) => {
-                this.socket.removeListener("data", onData);
+                this.socket.off("data", onData); // Changed from removeListener to off for better readability and modern syntax
                 resolve(data);
             };
             this.socket.on("data", onData);
@@ -109,14 +137,13 @@ class Peer {
         return message;
     }
 
-    constructRequestMessage(nextBlockOffset = 0,blockSize = DEFAULT_BLOCK_SIZE) {
+    constructRequestMessage(nextBlockOffset = 0, blockSize = DEFAULT_BLOCK_SIZE) {
         const message = this.constructMessage(6, 13);
         message.writeUInt32BE(this.piece_index, 5);
         message.writeUInt32BE(nextBlockOffset, 9); // blockLength
         message.writeUInt32BE(blockSize, 13); // block length
         return message;
     }
-x
     handlePiece() {
         const incoming_piece_index = this.buffer.readUInt32BE(5);
         const incoming_block_offset = this.buffer.readUInt32BE(9);
@@ -139,12 +166,17 @@ x
     computeDownloadedFiles() {
         const fileBuffer = fs.readFileSync(this.output_path);
         const hash = crypto.createHash('sha1').update(fileBuffer).digest('hex');
+        let is_valid;
+        console.log("FILE HASH -->" , this.piece_hashes[this.piece_index])
+        console.log("MY FILE HASH -->" , hash);
         if (hash !== this.piece_hashes[this.piece_index]) {
+            is_valid = 0
             console.error("Hash mismatch! Download Broken");
         } else {
-            console.log("Downloaded Piece successfully");
+            is_valid = 1
+            console.log("Hash Verified! Downloaded Piece successfully");
         }
-        this.disconnect();
+        this.disconnect(is_valid);
     }
 
     handleError(error) {
@@ -156,8 +188,9 @@ x
         this.socket.write(message);
     }
 
-    disconnect() {
-        this.socket.end();
+    disconnect(flag) {
+        this.downloaded = flag
+        this.socket.emit("downloaded", "downloaded the file closing the connection.");
     }
 }
 
